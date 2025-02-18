@@ -127,4 +127,27 @@ ostream& operator<<(ostream& out, const Rational& a) {
 
 
 int main() {
+	Rational a(2, 3), b(52, 25);
+	int n = 5;
+	cout << "Inicialisation constructor: " << a << ' ' << b << '\n'; // Inicialisation constructor: 2/3 52/25
+	cout << "Rational and Rational: " << a + b << ' ' << a - b << ' ' << a * b << ' ' << a / b << '\n'; // Rational and Rational: 206/75 -106/75 104/75 25/78
+	cout << "Rational and integer: " << a + n << ' ' << a - n << ' ' << a * n << ' ' << a / n << '\n'; // Rational and integer: 17/3 -13/3 10/3 2/15
+	cout << "Integer and Rational: " << n + a << ' ' << n - a << ' ' << n * a << ' ' << n / a << '\n'; // Integer and Rational: 17/3 13/3 10/3 15/2
+	Rational c;
+	cout << "Default constuctor: " << c << '\n'; // Default constuctor: 1/1
+	Rational ca(a);
+	cout << "Copy constructor: " << ca << '\n'; // Copy constructor: 2/3
+	Rational zero(0, 12);
+	Rational zero2(0, 123);
+	cout << "Zero in numerator: " << zero << ". Multiblication by zero Rational: " << a * zero << '\n'; // Zero in numerator: 0. Multiblication by zero Rational: 0
+	//Rational e(13, 0); // Error! Division by 0
+	//cout << "Division by zero Rational" << n / zero << ' '; // Error! Division by 0
+	//cout << a / zero << '\n'; // Error! Division by 0
+	//cout << "Division by zero integer" << a / 0; // Error! Division by 0
+	cout << "Operations with zero Rationals: " << zero + zero2 << ' ' << zero - zero2 << ' ' << zero * zero2 << '\n'; // Operations with zero Rationals: 0 0 0
+	//cout << zero / zero2; // Error! Division by 0
+	ca.SetFraq(9, 33);
+	cout << ".SetFraq: " << ca << '\n'; // .SetFraq: 3/11
+	//ca.SetFraq(1, 0); // Error! Division by 0
+
 }
