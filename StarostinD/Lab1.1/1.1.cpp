@@ -17,7 +17,7 @@ class Rational {
 		return Gcd(b, a % b);
 	}
 public:
-	void SetFraq(int p_, int q_) {
+	void SetFrac(int p_, int q_) {
 		if (p_ == 0 && q_ != 0) {
 			p = 0, q = 1;
 		}
@@ -146,8 +146,8 @@ int main() {
 	//cout << "Division by zero integer" << a / 0; // Error! Division by 0
 	cout << "Operations with zero Rationals: " << zero + zero2 << ' ' << zero - zero2 << ' ' << zero * zero2 << '\n'; // Operations with zero Rationals: 0 0 0
 	//cout << zero / zero2; // Error! Division by 0
-	ca.SetFraq(9, 33);
-	cout << ".SetFraq: " << ca << '\n'; // .SetFraq: 3/11
+	ca.SetFrac(9, 33);
+	cout << ".SetFrac: " << ca << '\n'; // .SetFrac: 3/11
 	//ca.SetFraq(1, 0); // Error! Division by 0
 
 }
