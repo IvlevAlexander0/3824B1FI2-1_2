@@ -139,7 +139,7 @@ int main() {
 	cout << "Copy constructor: " << ca << '\n'; // Copy constructor: 2/3
 	Rational zero(0, 12);
 	Rational zero2(0, 123);
-	cout << "Zero in numerator: " << zero << ". Multiblication by zero Rational: " << a * zero << '\n'; // Zero in numerator: 0. Multiblication by zero Rational: 0
+	cout << "Zero in numerator: " << zero << ". Multiplication by zero Rational: " << a * zero << '\n'; // Zero in numerator: 0. Multiplication by zero Rational: 0
 	//Rational e(13, 0); // Error! Division by 0
 	//cout << "Division by zero Rational" << n / zero << ' '; // Error! Division by 0
 	//cout << a / zero << '\n'; // Error! Division by 0
