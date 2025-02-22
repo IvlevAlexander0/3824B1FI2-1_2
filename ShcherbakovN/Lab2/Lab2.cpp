@@ -57,7 +57,7 @@ public:
     {
         for (int i = deg; i >= 0; --i)
         {
-            if (i == deg)
+            if (i == deg && i != 0)
             {
                 if (coefficients[i] == 0.0)
                 {
@@ -85,8 +85,16 @@ public:
             {
                 if (coefficients[i] != 0)
                 {
-                    cout << showpos << coefficients[i] << noshowpos;
-                    continue;
+                    if (deg != 0)
+                    {
+                        cout << showpos << coefficients[i] << noshowpos;
+                        continue;
+                    }
+                    else if (deg == 0)
+                    {
+                        cout << coefficients[i];
+                        continue;
+                    }
                 }
                 else
                 {
@@ -133,7 +141,7 @@ int main()
 
     my_p.print_polynomial();
 
-    my_p.set_deg(3);
+    my_p.set_deg(1);
 
     my_p.set_coefficients();
 
