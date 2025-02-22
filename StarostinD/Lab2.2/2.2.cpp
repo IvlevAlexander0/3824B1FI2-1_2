@@ -83,6 +83,7 @@ public:
 	friend ostream& operator<<(ostream& out, const Polynomial& P);
 	friend Polynomial operator+(const Polynomial& a, const Polynomial& b);
 	friend Polynomial operator-(const Polynomial& a,const Polynomial& b);
+	friend Polynomial operator*(const Polynomial& a, const Polynomial& b);
 	Polynomial& operator=(const Polynomial& eq) {
 		for (int i = 0; i <= 12; ++i) {
 			poly[i] = eq[i];
@@ -158,7 +159,21 @@ Polynomial operator-(const Polynomial& a, const Polynomial& b) {
 	result.degree = deg;
 	return result;
 }
-
+Polynomial operator*(const Polynomial& a, const Polynomial& b) {
+	if (a.degree + b.degree > 12) {
+		cout << "Error! The sum of the degrees of the arguments for this operation must be less than 13\n";
+		exit(0);
+	}
+	Polynomial result;
+	int deg = a.degree + b.degree;
+	result.degree = deg;
+	for (int i = 0; i <= a.degree; ++i) {
+		for (int j = 0; j <= b.degree; ++j) {
+			result.poly[i + j] += a.poly[i] * b.poly[j];
+		}
+	}
+	return result;
+}
 
 int main() {
 	double cf[]{ 1, 1, 1 };
@@ -175,6 +190,12 @@ int main() {
 	cout << f2 << " f2.value(sqrt(13)) =  " << f2.value(sqrt(13)) << endl; // (3x^1 + 1) f2.value(sqrt(13)) =  11.8167
 	Polynomial f2_d = f2.derivative();
 	cout << f2 << ' ' << f2_d << ' ' << f2_d.derivative() << endl; // (3x^1 + 1) (3) (0)
-	cout << 15 + f2_d<< ' ' << -f << ' ' << f2_d - f2 - 15 << ' ' << 15 + (-f2_d); // (18) (-4x^4 -12.5x^2 -1x^1 -1) (-3x^1 -13) (12)
+	cout << 15 + f2_d<< ' ' << -f << ' ' << f2_d - f2 - 15 << ' ' << 15 + (-f2_d) << '\n'; // (18) (-4x^4 -12.5x^2 -1x^1 -1) (-3x^1 -13) (12)
+	f2.set_coef(2, 3);
+	double c3[2]{ 1, 1 };
+	double c4[2]{ -1, 1 };
+	cout << Polynomial(2, c3) * Polynomial(2, c4) << ' ' << Polynomial(2, c3) * Polynomial(2, c4) * f2 << '\n'; // (x^2 -1) (3x^4 + 3x^3 -2x^2 -3x^1 -1)
+	f2.set_coef(12, 3);
+	cout << f2 << ' ' << f2.derivative();
  	return 0;
 }
