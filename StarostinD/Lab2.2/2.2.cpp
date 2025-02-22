@@ -195,7 +195,5 @@ int main() {
 	double c3[2]{ 1, 1 };
 	double c4[2]{ -1, 1 };
 	cout << Polynomial(2, c3) * Polynomial(2, c4) << ' ' << Polynomial(2, c3) * Polynomial(2, c4) * f2 << '\n'; // (x^2 -1) (3x^4 + 3x^3 -2x^2 -3x^1 -1)
-	f2.set_coef(12, 3);
-	cout << f2 << ' ' << f2.derivative();
  	return 0;
 }
