@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstring>
-#include <iomanip>
 #include <cmath>
 #include <climits>
 
@@ -12,23 +11,37 @@ private:
 	int second;
 
 	void normal() {
-		if (second < 0) {
+
+		if (second < 0 && minute>0) {
 
 			int total_seconds = minute * 60 + second;
 			minute = total_seconds / 60;
 			second = total_seconds % 60;
 
 		}
-		if (minute < 0) {
+		else if (second < 0 && (minute == 0 || minute < 0) && (hour == 0 || hour < 0)) {
+			second = 0;
+		}
+		else if (minute == 0 && hour > 0 && second < 0) {
+			int total_seconds = hour * 3600 + second;
+			hour = total_seconds / 3600;
+			int ost1 = total_seconds - hour * 3600;
+			minute = ost1 / 60;
+			second = ost1 - minute * 60;
+		}
+
+
+		if (minute < 0 && hour>0) {
 
 			int total_minutes = hour * 60 + minute;
 			hour = total_minutes / 60;
 			minute = total_minutes % 60;
 
 		}
-		if (minute == 0 && second < 0) {
-			second = 0;
+		else if (minute < 0 && (hour == 0 || hour < 0)) {
+			minute = 0;
 		}
+
 		if (second >= 60) {
 			minute += second / 60;
 			second %= 60;
@@ -37,12 +50,11 @@ private:
 			hour += minute / 60;
 			minute %= 60;
 		}
-		if (hour >= 24) {
+		if (hour >= 24 || hour < 0) {
 			hour = 0;
 		}
-		if (hour < 0) {
-			hour = 0;
-		}
+
+
 	}
 
 	int proverka(const std::string& str, int l_value, int r_value) {
@@ -63,6 +75,8 @@ private:
 	}
 
 public:
+
+
 	TIME(int hour_a = 0, int minute_a = 0, int second_a = 0) {
 		hour = hour_a;
 		minute = minute_a;
@@ -75,8 +89,8 @@ public:
 	void set_the_time() {
 
 		hour = proverka("Hour (0 - 23): ", 0, 23);
-		minute = proverka("Minute (min = - (hour*60)): ", -(hour * 60), INT_MAX);
-		second = proverka("Second (min = - (minute * 60)): ", -(minute * 60), INT_MAX);
+		minute = proverka("Minute (0 - 59): ", 0, 59);
+		second = proverka("Second (0 - 59): ", 0, 59);
 
 
 
@@ -85,20 +99,14 @@ public:
 	void shift() {
 		int h, m, s;
 
-
-		int b = -hour;
-		int b1 = 23 - hour;
-
-		h = proverka("Shift_hour (min = - hour, max = 23 - hour): ", b, b1);
+		h = proverka("Shift_hour: ", INT_MIN, INT_MAX);
 		hour += h;
 
-		int a = -(hour * 60);
-		int a1 = 23 * 60 - hour * 60;
-		m = proverka("Shift_minute (min = - (new_hour*60), max = 23*60 - new_hour*60) : ", a, a1);
+		m = proverka("Shift_minute: ", INT_MIN, INT_MAX);
 		minute += m;
+
 		s = proverka("Shift_second: ", INT_MIN, INT_MAX);
 		second += s;
-
 
 		normal();
 	}
@@ -175,6 +183,5 @@ int main() {
 			break;
 		}
 	} while (f2 == 0);
-
 	return 0;
 }
