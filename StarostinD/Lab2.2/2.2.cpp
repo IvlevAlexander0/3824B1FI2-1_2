@@ -263,19 +263,5 @@ int main() {
 	double c3[2]{ 1, 1 };
 	double c4[2]{ -1, 1 };
 	cout << Polynomial(2, c3) * Polynomial(2, c4) << ' ' << Polynomial(2, c3) * Polynomial(2, c4) * f2 << '\n'; // (x^2 -1) (3x^4 + 3x^3 -2x^2 -3x^1 -1)
-	double a[] = { 1, 0, 1, 0, 0, 0, 1 };
-	Polynomial a_(sizeof(a) / sizeof(a[0]), a);
-	cout << a_ << endl;
-	a_.set_coef(6, 0);
-	cout << a_ << ' ' << a_.get_degree() << endl;
-	a_.set_coef(6, 1);
-	a_.set_coef(4, 1);
-	cout << a_ << ' ' << a_.get_degree() << endl;
-	a_.set_coef(6, 0);
-	cout << a_ << ' ' << a_.get_degree() << endl;
-	a_.set_coef(6, 1);
-	a_.set_coef(4, 0);
-	a_.set_coef(6, 0);
-	cout << a_ << ' ' << a_.get_degree() << endl;
  	return 0;
 }
