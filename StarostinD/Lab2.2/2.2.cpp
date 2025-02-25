@@ -95,11 +95,14 @@ public:
 			}
 		}
 		else {
-			poly[id] = c;
 			if (id > degree) {
 				next_degree = degree;
 				degree = id;
 			}
+			else if(poly[id] == 0 && c != 0 && id > next_degree) {
+				next_degree = id;
+			}
+			poly[id] = c;
 		}
 	}
 	double value(double x) const {
