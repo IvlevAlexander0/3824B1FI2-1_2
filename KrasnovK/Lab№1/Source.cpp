@@ -32,13 +32,13 @@ public:
 
 int main() {
     WeightConverter wc;
-    
+
     double vvod;
     cin >> vvod;
     wc.setWeight(vvod);
 
     cout << "In kg: " << wc.Kg() << endl;
     cout << wc << endl;
-    
+
     return 0;
 }
