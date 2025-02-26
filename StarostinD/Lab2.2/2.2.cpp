@@ -24,7 +24,7 @@ public:
 	Polynomial(int size, const double src[]): next_degree(0), degree(0) {
 		--size;
 		if (size < 0 || size > 12) {
-			cout << "Error! Minimim degree - 0, maximum degree - 12\n";
+			cout << "Error! Minimum degree - 0, maximum degree - 12\n";
 			exit(0);
 		}
 		bool flag = true;
@@ -57,7 +57,7 @@ public:
 	}
 	void set_degree(int deg) {
 		if (deg < 0 || deg > 12) {
-			cout << "Error! Minimim degree - 0, maximum degree - 12\n";
+			cout << "Error! Minimum degree - 0, maximum degree - 12\n";
 			exit(0);
 		}
 		degree = deg;
@@ -73,7 +73,7 @@ public:
 	}
 	void set_coef(int id, double c) {
 		if (id < 0 || id > 12) {
-			cout << "Error! Minimim degree - 0, maximum degree - 12\n";
+			cout << "Error! Minimum degree - 0, maximum degree - 12\n";
 		}
 		else if (id == 0 && c == 0 && degree <= 0) {
 			cout << "Error! The leading coefficient of polynomial can't be equal 0\n";
@@ -134,7 +134,7 @@ public:
 			return poly[id];
 		}
 		else {
-			cout << "Error! Minimim degree - 0, maximum degree - 12\n";
+			cout << "Error! Minimum degree - 0, maximum degree - 12\n";
 			exit(0);
 		}
 	}
