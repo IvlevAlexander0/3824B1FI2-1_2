@@ -143,6 +143,9 @@ public:
 	friend Polynomial operator-(const Polynomial& a,const Polynomial& b);
 	friend Polynomial operator*(const Polynomial& a, const Polynomial& b);
 	Polynomial& operator=(const Polynomial& eq) {
+		if (this == &eq) {
+			return *this;
+		}
 		for (int i = 0; i <= 12; ++i) {
 			poly[i] = eq[i];
 		}
