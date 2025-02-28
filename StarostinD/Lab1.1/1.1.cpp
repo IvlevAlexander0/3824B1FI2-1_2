@@ -37,6 +37,14 @@ public:
 			q = q_;
 		}
 	}
+	void SetFrac(double a) {
+		int c = 1;
+		while (ceil(a * c) - a * c > 0.0000001) {
+			c++;
+		}
+		p = ceil(a * c);
+		q = c;
+	}
 	Rational() {
 		p = 1, q = 1;
 	}
@@ -61,59 +69,39 @@ public:
 		}
 	}
 	Rational(const Rational& other): p(other.p), q(other.q) {};
+	Rational(int a) {
+		p = a;
+		q = 1;
+	}
+	Rational(double a) {
+		int c = 1;
+		while (ceil(a * c) - a * c > 0.0000001) {
+			c++;
+		}
+		p = ceil(a * c);
+		q = c;
+	}
 	friend Rational operator+(const Rational& a, const Rational& b);
-	friend Rational operator+(const Rational& a, int b);
-	friend Rational operator+(int a, const Rational& b);
 	friend Rational operator-(const Rational& a, const Rational& b);
-	friend Rational operator-(const Rational& a, int b);
-	friend Rational operator-(int a, const Rational& b);
 	friend Rational operator*(const Rational& a, const Rational& b);
-	friend Rational operator*(const Rational& a, int b);
-	friend Rational operator*(int a, const Rational& b);
 	friend Rational operator/(const Rational& a, const Rational& b);
-	friend Rational operator/(const Rational& a, int b);
-	friend Rational operator/(int a, const Rational& b);
 	friend ostream& operator<<(ostream& out, const Rational& a);
 };
 
 Rational operator+(const Rational& a, const Rational& b) {
 	return Rational(a.p * b.q + b.p * a.q, a.q * b.q);
 }
-Rational operator+(const Rational& a, int b) {
-	return Rational(a.p + b * a.q, a.q);
-}
-Rational operator+(int a, const Rational& b) {
-	return Rational(b.p + a * b.q, b.q);
-}
 
 Rational operator-(const Rational& a, const Rational& b) {
 	return Rational(a.p * b.q - b.p * a.q, a.q * b.q);
-}
-Rational operator-(const Rational& a, int b) {
-	return Rational(a.p - b * a.q, a.q);
-}
-Rational operator-(int a, const Rational& b) {
-	return Rational(a * b.q - b.p, b.q);
 }
 
 Rational operator*(const Rational& a, const Rational& b) {
 	return Rational(a.p * b.p, a.q * b.q);
 }
-Rational operator*(const Rational& a, int b) {
-	return Rational(a.p * b, a.q);
-}
-Rational operator*(int a, const Rational& b) {
-	return Rational(a * b.p, b.q);
-}
 
 Rational operator/(const Rational& a, const Rational& b) {
 	return Rational(a.p * b.q, a.q * b.p);
-}
-Rational operator/(const Rational& a, int b) {
-	return Rational(a.p, a.q * b);
-}
-Rational operator/(int a, const Rational& b) {
-	return Rational(a * b.q, b.p);
 }
 
 ostream& operator<<(ostream& out, const Rational& a) {
@@ -147,7 +135,9 @@ int main() {
 	cout << "Operations with zero Rationals: " << zero + zero2 << ' ' << zero - zero2 << ' ' << zero * zero2 << '\n'; // Operations with zero Rationals: 0 0 0
 	//cout << zero / zero2; // Error! Division by 0
 	ca.SetFrac(9, 33);
-	cout << ".SetFrac: " << ca << '\n'; // .SetFrac: 3/11
+	cout << ".SetFrac(9, 33): " << ca << '\n'; // .SetFrac: 3/11
 	//ca.SetFraq(1, 0); // Error! Division by 0
-
+	Rational stwo{ sqrt(2) };
+	cout << "Rational and double " << Rational(1.0 / 137) << ' ' << stwo << ' ' << stwo + a << '\n'; // Rational and double 1/137 13250218/9369319 58489292/28107957
+	cout << a - stwo << ' ' << stwo * a << ' ' << a / stwo; // -21012016/28107957 26500436/28107957 9369319/19875327
 }
