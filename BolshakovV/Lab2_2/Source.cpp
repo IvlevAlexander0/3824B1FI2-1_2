@@ -16,24 +16,45 @@ public:
 			std::cout << "\nError. Incorrect data (vector size)" << std::endl;
 			size_a = 1;
 		}
-		else {
-			size = size_a;
-		}
-		mass = new int[size];
+
+		size = size_a;
+		mass = new int[size]();
 		name = vector_name;
 	}
+
+	Vector(const Vector& vector) {
+		name = vector.name;
+		size = vector.size;
+		delete[] mass;
+		mass = new int[size]();
+		for (int i = 0; i < size; i++) {
+			mass[i] = vector.mass[i];
+		}
+
+	}
+
 	void set_the_size(int size1) {
 		if (size1 < 1 || size1>20) {
 			std::cout << '\n' << name << ":" << "Error. Incorrect data (vector size)" << std::endl;
 			size1 = 1;
 		}
+
+		int* new_mass = new int[size1]();
+
+		for (int i = 0; i < size && i < size1; i++) {
+			new_mass[i] = mass[i];
+
+		}
 		delete[] mass;
+
+		mass = new_mass;
 		size = size1;
-		mass = new int[size];
 	}
-	void print_size() {
+
+	void print_size() const {
 		std::cout << '\n' << name << ": " << "Vector size: " << size << std::endl;
 	}
+
 	void set_component(int number, int value) { // NUMBER = INDEX + 1
 		if (number < 1 || number > size) {
 			std::cout << '\n' << name << ": " << "Error. Incorrect data (wrong number)" << std::endl;
@@ -43,7 +64,8 @@ public:
 			mass[number - 1] = value;
 		}
 	}
-	void print_component(int number) {
+
+	void print_component(int number) const {
 		if (number < 1 || number > size) {
 			std::cout << '\n' << name << ": " << "Error.Incorrect data(wrong number)" << std::endl;
 
@@ -53,46 +75,54 @@ public:
 			std::cout << '\n';
 		}
 	}
-	void print_len() {
+
+	void print_len() const {
 		int sum = 0;
 		for (int i = 0; i < size; i++) {
 			sum += mass[i] * mass[i];
 		}
 		std::cout << '\n' << name << ": " << "Vector lenght: " << sqrt(sum) << std::endl;
 	}
-	void proizvedenie(const Vector& v1, const Vector& v2) {
+
+	
+	int operator* (const Vector& v2) const {
 		int sum = 0;
-		if (v1.size == v2.size) {
-			for (int i = 0; i < size; i++) {
-				sum += v1.mass[i] * v2.mass[i];
+		if (this->size == v2.size) {
+			for (int i = 0; i < v2.size; i++) {
+				sum += this->mass[i] * v2.mass[i];
 			}
-			std::cout << "\nComposition " << v1.name << " and " << v2.name << ": " << sum << std::endl;
+			return sum;
 		}
 		else {
-			std::cout << "\nError size1 not equal to size2" << " (" << v1.name << " and " << v2.name << ")" << std::endl;
+			return -1;
+		}
+	}
+
+	
+	Vector operator +(const Vector& v2) const {
+		if (this->size == v2.size) {
+			Vector v3(this->size, this->name + "+" + v2.name);
+			for (int i = 0; i < v2.size; i++) {
+				v3.mass[i] = this->mass[i] + v2.mass[i];
+			}
+			return v3;
+		}
+		else {
+
+			return Vector(0, "Error size vectors");
+
 		}
 
 	}
 
-	void sum(const Vector& v1, const Vector& v2) {
-		Vector v3(v1.size);
-
-		if (v1.size == v2.size) {
-			for (int i = 0; i < size; i++) {
-				v3.mass[i] = v1.mass[i] + v2.mass[i];
-			}
-
-			std::cout << "Sum " << v1.name << " and " << v2.name << ": " << "V3 (";
-			for (int i = 0; i < v3.size - 1; i++) {
-				std::cout << v3.mass[i] << ",";
-			}
-			std::cout << v3.mass[size - 1] << ")" << std::endl;
+	void print_sum() {
+		std::cout << this->name << ": (";
+		for (int i = 0; i < this->size - 1; i++) {
+			std::cout << this->mass[i] << ",";
 		}
-		else {
-			std::cout << "\nError size1 not equal to size2" << " (" << v1.name << " and " << v2.name << ")" << std::endl;
-		}
-
+		std::cout << this->mass[size - 1] << ")" << std::endl;
 	}
+
 
 	Vector& operator = (const Vector& b) {
 
@@ -130,9 +160,30 @@ int main() {
 	v1.print_component(3);
 	v1.print_len();
 
+	// size1=3, new_size=5 -> v1(1,5,5,0,0)
+
+	v1.set_the_size(5);
+	v1.print_component(1);
+	v1.print_component(2);
+	v1.print_component(3);
+	v1.print_component(4);
+	v1.print_component(5);
+
+	//v1(1,5,5,7,9)
+	v1.set_component(4, 7);
+	v1.set_component(5, 9);
+	v1.print_component(4);
+	v1.print_component(5);
+
+	//size1=5, new_size=3 -> v1(1,5,5)
+	v1.set_the_size(3);
+	v1.print_component(1);
+	v1.print_component(2);
+	v1.print_component(3);
+	v1.print_component(4);
+
 
 	Vector v2(2, "V2");
-
 	v2.set_the_size(3);
 	v2.print_size();
 	v2.set_component(1, 6);
@@ -143,28 +194,53 @@ int main() {
 	v2.print_component(3);
 	v2.print_len();
 
-	v1.sum(v1, v2);
-	v1.proizvedenie(v1, v2);
+	/*v1.sum(v1, v2);
+	v1.proizvedenie(v1, v2);*/
 
-	Vector v3;
+	//operator overload
+	int comp = v1 * v2;
+	std::cout << "Composition v1 and v2: " << comp << std::endl;
+
+	Vector v0 = v1 + v2;
+	v0.print_sum();
+
+	std::cout << "\n\nV3:\n";
+	Vector v3(32);
+	v3.print_size();
 	v3.set_the_size(32);
 	v3.print_size();
 	v3.set_component(1, 89);
 	v3.set_component(2, 5);
-
 	v3.print_component(1);
 	v3.print_component(2);
 
 	v3.print_len();
 
-	v2.proizvedenie(v2, v3);
+	/*v2.proizvedenie(v2, v3);*/
+	int compos2 = v2 * v3;
+	std::cout << "Composition v2 and v3: " << compos2 << std::endl;
 
+	Vector v01 = v1 + v3;
+	v01.print_sum(); //Error size vectors
+
+	//operator overload =
+	std::cout << "\n\nV3 = V2:\n";
 	v3 = v2;
 	v3.print_size();
 	v3.print_component(1);
 	v3.print_component(2);
 	v3.print_component(3);
 	v3.print_len();
+
+
+	//using the copy constructor
+	std::cout << "\n\nV4:\n";
+	Vector v4(v1);
+	v4.print_size();
+	v4.print_component(1);
+	v4.print_component(2);
+	v4.print_component(3);
+	v4.print_len();
 
 	return 0;
 }
