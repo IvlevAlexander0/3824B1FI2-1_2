@@ -31,18 +31,18 @@ public:
         data[length] = '\0';
     }
 
-    double GetLength() {
+    double GetLength() const {
         return length;
     }
 
-    char GetCharOnIndex(int index) {
-        if (index < length)
+    char GetCharOnIndex(int index) const {
+        if (index < length && index >= 0)
             return data[index];
         else return '\0';
     }
 
     void SetCharOnIndex(char ch, int index) {
-        if (index < length)
+        if (index < length && index >= 0)
             data[index] = ch;
     }
 
@@ -63,7 +63,7 @@ public:
         cout << "Your string: " << data << endl;
     }
 
-    bool GetIsPalindrome() {
+    bool GetIsPalindrome() const{
         for (size_t i = 0; i < length / 2; i++) {
             if (data[i] != data[length - 1 - i])
                 return false;
@@ -71,7 +71,7 @@ public:
         return true;
     }
 
-    size_t GetLatinCharCount() {
+    size_t GetLatinCharCount() const{
         size_t count = 0;
         bool unique[26] = { false };
         for (size_t i = 0; i < length; i++) {
