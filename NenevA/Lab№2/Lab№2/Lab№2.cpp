@@ -111,16 +111,23 @@ public:
         return true;
     }
 
-    // 7) Уникальные латинские буквы через последовательность символов
-    size_t countUniqueLatinChars() const {
-        unordered_set<char> uniqueChars;
-        for (size_t i = 0; i < length; ++i) {
-            char ch = tolower(data[i]);
-            if ((ch >= 'a' && ch <= 'z')) {
-                uniqueChars.insert(ch);
+    // 7) Уникальные латинские буквы через массив
+    int countUniqueLatinChars() const {
+        int charSet[26] = { 0 };
+        int uniqueCount = 0;
+        int n = getLength();
+        for (int i = 0; i < n; i++) {
+            char ch = data[i];
+            if (isalpha(ch)) {
+                char Ch = tolower(ch);
+                int index = Ch - 'a';
+                if (charSet[index] != 1) {
+                    charSet[index] = 1;
+                    uniqueCount++;
+                }
             }
         }
-        return uniqueChars.size();
+        return uniqueCount;
     }
 
     // Вывести строку
