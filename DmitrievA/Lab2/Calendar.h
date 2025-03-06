@@ -1,6 +1,7 @@
 #pragma once
 #include <ostream>
 #include <string>
+#include <limits>
 #include <iostream>
 
 char months[12][12] = { "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November","December" };
@@ -69,7 +70,7 @@ public:
 		cdate.year += cddate.years;
 		while (cddate.days > 365 + is_year_leap(cdate.year)) {
 			cddate.days -= 365 + is_year_leap(cdate.year);
-			if (cdate.year == UINT32_MAX) {
+			if (cdate.year == UINT_MAX) {
 				std::cout << "Max year achived. returning default value" << std::endl;
 				return Date();
 			}
@@ -83,21 +84,21 @@ public:
 			}
 			cdate.year -= 1;
 		}
-		while (cddate.months > 12) {
-			cddate.months -= 12;
-			if (cdate.year == UINT32_MAX) {
+		if(cddate.months > 12) {
+			if (UINT_MAX - (cddate.months/12) < cdate.year) {
 				std::cout << "Max year achived. returning default value" << std::endl;
 				return Date();
 			}
-			cdate.year += 1;
+			cdate.year += (cddate.months/12);
+			cddate.months = cddate.months % 12;
 		}
-		while (-cddate.months > 12) {
-			cddate.months += 12;
-			if (cddate.years == 1) {
+		if (-cddate.months > 12) {
+			if (cddate.months / 12 > cddate.years) {
 				std::cout << "Can't move to negative year. returning default value" << std::endl;
 				return Date();
 			}
-			cdate.year -= 1;
+			cdate.year -= cddate.months / 12;
+			cddate.months = -((-cddate.months) % 12);
 		}
 		while (cddate.days > days[cdate.month - 1] || (cdate.month == 2 && cddate.days > 28 + is_year_leap(cdate.year))) {
 			if (cdate.month == 2) {
@@ -108,7 +109,7 @@ public:
 			}
 			if (cdate.month == 12) {
 				cdate.month = 1;
-				if (cdate.year == UINT32_MAX) {
+				if (cdate.year == UINT_MAX) {
 					std::cout << "Max year achived. returning default value" << std::endl;
 					return Date();
 				}
@@ -138,7 +139,7 @@ public:
 			}
 		}
 		if (cdate.month + cddate.months > 12) {
-			if (cdate.year == UINT32_MAX) {
+			if (cdate.year == UINT_MAX) {
 				std::cout << "Max year achived. returning default value" << std::endl;
 				return Date();
 			}
@@ -159,7 +160,7 @@ public:
 		if (cdate.day + cddate.days > days[cdate.month - 1] || (cdate.month == 2 && cddate.days > 28 + is_year_leap(cdate.year))) {
 			if (cdate.month == 12) {
 				cdate.month = 1;
-				if (cdate.year == UINT32_MAX) {
+				if (cdate.year == UINT_MAX) {
 					std::cout << "Max year achived. returning default value" << std::endl;
 					return Date();
 				}
