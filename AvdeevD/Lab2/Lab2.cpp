@@ -126,6 +126,7 @@ public:
 		return res;
 	}
 	friend std::ostream& operator<<(std::ostream& stream, const DinArr& arr);
+	~DinArr() {};
 
 
 private:
@@ -140,7 +141,6 @@ std::ostream& operator<<(std::ostream& stream, const DinArr& arr)
 	}
 	return stream;
 }
-
 
 
 int main() {
