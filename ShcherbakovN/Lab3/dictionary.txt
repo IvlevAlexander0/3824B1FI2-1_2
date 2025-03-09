@@ -1,0 +1,6 @@
+Sun;Луч
+Cat;Кошка
+Book;Книга
+Num;Число
+Hi;Привет
+Smartphone;Телефон
