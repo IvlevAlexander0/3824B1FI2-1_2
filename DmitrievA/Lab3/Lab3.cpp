@@ -17,7 +17,9 @@ int main()
 {
     MenuItem i1 = MenuItem(print_sqrt, "Root");
     MenuItem i2 = MenuItem(print_square, "Square");
-    Menu m = Menu(3);
+    Menu m = Menu(2);
+    MenuItem* mis = new MenuItem[10];
+    delete[] mis;
     m.set_menu_item(0, i1);
     m.set_menu_item(1, i2);
     std::cout << m <<std::endl;

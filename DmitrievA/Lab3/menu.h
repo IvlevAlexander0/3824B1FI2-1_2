@@ -15,7 +15,7 @@ class MenuItem {
 public:
 	void (*function) (double);
 	string name;
-	MenuItem() : name{ "" }, function{ default_function } {}
+	MenuItem() : name{string()}, function{default_function} {}
 	MenuItem(void (*function_) (double), string name_) : function{ function_ }, name{ name_ } {}
 	MenuItem(const MenuItem& mi) {
 		name = mi.name;
@@ -114,6 +114,9 @@ public:
 	}
 	size_t get_last_pick() {
 		return last_pick;
+	}
+	~Menu() {
+		delete[] items;
 	}
 	friend ostream& operator << (ostream& out, Menu m);
 };
