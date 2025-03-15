@@ -35,19 +35,19 @@ public:
 	Func() : f(NULL), name(""), n(unknown) {};
 	Func(double (*g)(double)) : f(g) {
 		if (g == ex) {
-			name = "exp";
+			name = "exp(x)";
 			n = exp_;
 		}
 		else if (g == asn) {
-			name = "arcsin";
+			name = "arcsin(x)";
 			n = asin_;
 		}
 		else if (g == acs) {
-			name = "arccos";
+			name = "arccos(x)";
 			n = acos_;
 		}
 		else if (g == ln) {
-			name = "log";
+			name = "log(1 + x)";
 			n = log_;
 		}
 		else {
@@ -56,19 +56,19 @@ public:
 		}
 	}
 	Func(const string& fname): f(NULL), name(fname) {
-		if (fname == "exp") {
+		if (fname == "exp(x)") {
 			f = exp;
 			n = exp_;
 		}
-		else if (fname == "arcsin") {
+		else if (fname == "arcsin(x)") {
 			f = asin;
 			n = asin_;
 		}
-		else if (fname == "arccos") {
+		else if (fname == "arccos(x)") {
 			f = acos;
 			n = acos_;
 		}
-		else if (fname == "log") {
+		else if (fname == "log(1 + x)") {
 			f = log;
 			n = log_;
 		}
@@ -308,19 +308,31 @@ public:
 };
 
 class Taylor {
-	Func f;
+	Func* f;
 	unsigned int cnt;
 	double point;
 	long double* value;
 	string formula;
 	friend class Func;
 public:
-	Taylor() : f(), cnt(0), point(0), value(nullptr) {};
-	Taylor(double (*g)(double), unsigned int cnt_, double point_) : f(g), cnt(cnt_), point(point_), value(nullptr), formula("") {};
-	Taylor(string g, unsigned int cnt_, double point_) : f(g), cnt(cnt_), point(point_), value(nullptr), formula("") {};
-	Taylor(const Func& g, unsigned int cnt_, double point_) : f(g), cnt(cnt_), point(point_), value(nullptr), formula("") {};
+	Taylor() : f(nullptr), cnt(0), point(0), value(nullptr) {};
+	Taylor(double (* const g)(double), unsigned int cnt_, double point_) : f(new Func(g)), cnt(cnt_), point(point_), value(nullptr), formula("") {};
+	Taylor(const string g, unsigned int cnt_, double point_) : f(new Func(g)), cnt(cnt_), point(point_), value(nullptr), formula("") {};
+	Taylor(const Func& g, unsigned int cnt_, double point_) : f(new Func(g)), cnt(cnt_), point(point_), value(nullptr), formula("") {};
+	void set_function(double (* const g)(double)) {
+		if (f != nullptr) {
+			delete f;
+		}
+		f = new Func(g);
+	}
+	void set_function(const string g) {
+		if (f != nullptr) {
+			delete f;
+		}
+		f = new Func(g);
+	}
 	string get_name() {
-		return f.name;
+		return f->name;
 	}
 	int get_length() {
 		return cnt;
@@ -344,7 +356,7 @@ public:
 	}
 	string get_formula() {
 		if (value == nullptr && formula == "") {
-			return f.formula(cnt, point,formula);
+			return f->formula(cnt, point,formula);
 		}
 		else {
 			return formula;
@@ -353,7 +365,7 @@ public:
 	string get_formula(const double x, long double& res) {
 		if (value == nullptr) {
 			value = new long double;
-			*value = f.calculate(cnt, point, x, formula);
+			*value = f->calculate(cnt, point, x, formula);
 		}
 		res = *value;
 		return formula;
@@ -361,45 +373,49 @@ public:
 	long double get_value(const double x) {
 		if (value == nullptr) {
 			value = new long double;
-			*value = f.calculate(cnt, point, x, formula);
+			*value = f->calculate(cnt, point, x, formula);
 		}
 		return *value;
 	}
 	long double deviation(const double x) {
 		if (value == nullptr) {
 			value = new long double;
-			*value = f.calculate(cnt, point, x, formula);
+			*value = f->calculate(cnt, point, x, formula);
 		}
-		if (f.f == f.ln) {
-			return f.f(1 + x) - *value;
+		if (f->f == f->ln) {
+			return f->f(1 + x) - *value;
 		}
-		return f.f(x) - *value;
+		return f->f(x) - *value;
 	}
 	~Taylor() {
 		if (value != nullptr) {
 			delete value;
+		}
+		if (f != nullptr) {
+			delete f;
 		}
 	}
 };
 
 int main() {
 	cout << "List of functions: 1. exp(x) \t 2. arcsin(x) \t 3. arccos(x) \t 4. ln(1 + x)\n";
-	Func ex("exp");
+	Func ex("exp(x)");
 	Taylor ex_(ex, 30, 3.51);
 	cout << ex_.get_name() << endl;
 	double x = 20;
-	cout << "Formula: " << ex_.get_formula() << "\n VALUE(" << x << "): " << ex_.get_value(x) << ' ' << " DEVIATION : " << ex_.deviation(x) << " e ^ x = " << exp(x) << endl;
+	cout << "Formula: " << ex_.get_formula() << "\n VALUE(" << x << "): " << ex_.get_value(x) << ' ' 
+		 << " DEVIATION : " << ex_.deviation(x) << " e^x = " << exp(x) << endl;
 	Taylor asn(asin, 1, 0.25);
 	x = 0.59;
-	cout << "arcsin(x): \n";
+	cout << "\n\n" << asn.get_name() << ": \n";
 	for (int i = 1; i <= 21; ++i) {
 		cout << "cnt = " << asn.get_length() << " a = " << asn.get_point() << " x = " << x << " VALUE = " << fixed << setprecision(20) << asn.get_value(x) << " AND DEVIATION = " << asn.deviation(x);
 		cout << setprecision(2) << endl;
 		cout << "Formula: " << asn.get_formula() << endl;
 		asn.set_length(i + 1);
 	}
-	cout << "\n\narccos(x): \n";
 	Taylor acs(acos, 1, 0.16);
+	cout << "\n\n" << acs.get_name() << ": \n";
 	for (int i = 1; i <= 21; ++i) {
 		cout << "cnt = " << acs.get_length() << " a = " << acs.get_point() << " x = " << x << " VALUE = " << fixed << setprecision(20) << acs.get_value(x) << " AND DEVIATION = " << acs.deviation(x);
 		cout << setprecision(2) << endl;
@@ -407,8 +423,8 @@ int main() {
 		acs.set_length(i + 1);
 	}
 	x = 4;
-	cout << "\n\nln(1 + x): \n";
-	Taylor lg("log", 1, 2);
+	Taylor lg("log(1 + x)", 1, 2);
+	cout << "\n\n" << lg.get_name() << ": \n";
 	for (int i = 1; i <= 20; ++i) {
 		cout << "cnt = " << lg.get_length() << " a = " << lg.get_point() << " x = " << x << " VALUE = " << fixed << setprecision(20) << lg.get_value(x) << " AND DEVIATION = " << lg.deviation(x);
 		cout << setprecision(2) << endl;
