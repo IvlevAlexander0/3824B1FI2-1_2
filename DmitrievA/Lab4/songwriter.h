@@ -69,6 +69,7 @@ public:
 				i = new_song;
 			}
 		}
+		sort(songs.begin(), songs.end());
 	}
 	Song find_song(string name, string singer) {
 		for (Song s : songs) {
