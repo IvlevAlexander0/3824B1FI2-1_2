@@ -245,6 +245,9 @@ public:
 		s.append(to_string(day));
 		return s;
 	}
+	bool operator == (const Date& d2) const {
+		return year == d2.year && month == d2.month && day == d2.day;
+	}
 };
 
 std::ostream& operator << (std::ostream& stream, const Date& date) {

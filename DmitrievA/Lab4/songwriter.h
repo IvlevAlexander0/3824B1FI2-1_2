@@ -1,14 +1,14 @@
 #include <string>
 #include<iostream>
 #include <fstream>
-#include <set>
+#include <algorithm>
 #include <vector>
 #include "Date.h"
 #pragma once
 
 using std::string;
 using std::ostream;
-using std::set;
+using std::sort;
 using std::vector;
 using std::ofstream;
 using std::ifstream;
@@ -26,7 +26,7 @@ class Song {
 public:
 	Song(string name_="", string author_="", string singer_="", Date date_=Date()) :
 		name{name_}, author{author_}, singer{singer_}, date{date_} {}
-	 bool operator < (const Song& s2) const {
+	bool operator < (const Song& s2) const {
 		if (name != s2.name) {
 			return name < s2.name;
 		}
@@ -38,6 +38,9 @@ public:
 		}
 		return date < s2.date;
 	}
+	bool operator == (const Song& s2) const {
+		return name == s2.name && author == s2.author && s2.singer == singer && date == s2.date;
+	}
 	friend SongWriter;
 	friend ostream& operator << (ostream& out, Song s);
 };
@@ -46,21 +49,26 @@ ostream& operator << (ostream& out, Song s) {
 	return out;
 }
 class SongWriter {
-	set<Song> songs = set<Song>();
+	vector<Song> songs = vector<Song>();
 public:
 	SongWriter() {};
 	SongWriter(size_t count, Song* songs_) {
-		songs = set<Song>();
+		songs = vector<Song>();
 		for (size_t i = 0; i < count; i++) {
-			songs.insert(songs_[i]);
+			songs.push_back(songs_[i]);
 		}
+		sort(songs.begin(), songs.end());
 	}
 	void add_song(Song song) {
-		songs.insert(song);
+		songs.push_back(song);
+		sort(songs.begin(), songs.end());
 	}
 	void change_song(Song old_song, Song new_song) {
-		songs.erase(old_song);
-		songs.insert(new_song);
+		for (Song i : songs) {
+			if (i == old_song) {
+				i = new_song;
+			}
+		}
 	}
 	Song find_song(string name, string singer) {
 		for (Song s : songs) {
@@ -90,7 +98,11 @@ public:
 		return songs.size();
 	}
 	void delete_song(Song song) {
-		songs.erase(song);
+		for (size_t i = 0; i < songs.size(); ++i) {
+			if (songs[i] == song) {
+				songs.erase(songs.begin()+i);
+			}
+		}
 	}
 	void save_to_file(string path) {
 		ofstream file;
@@ -128,7 +140,7 @@ public:
 				}
 				if (']' == line[j] && j == line.size() - 1) {
 					if (flag_song) { 
-						songs.insert(Song(massive[0], massive[1], massive[2], Date(massive[3])));
+						songs.push_back(Song(massive[0], massive[1], massive[2], Date(massive[3])));
 						flag_song = false;
 						massive[0] = "";
 						massive[1] = "";
@@ -145,6 +157,7 @@ public:
 
 			}
 		}
+		sort(songs.begin(), songs.end());
 	}
 	friend ostream& operator << (ostream& out, SongWriter sw);
 };

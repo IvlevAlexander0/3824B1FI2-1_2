@@ -2,11 +2,17 @@
 //
 
 #include <iostream>
+#include <vector>
 #include "songwriter.h"
 
 int main()
-{
-    Song s1 = Song("Iron Wolf", "Sabaton", "Sabaton", Date());
+{   
+
+    //std::vector<int> v = { 1, 2, 3, 4, 5, 6, 7 };
+    //v.erase(v.begin() + 4);
+    //for (int i : v) { std::cout << i; }
+    //std::cout << '\n' << v.size() << std::endl;
+    Song s1 = Song("Bismark", "Sabaton", "Sabaton", Date());
     Song s2 = Song("Nightcall", "Kavinsky", "Kavinsky", Date());
     Song s3 = Song("The Story Ain't Over", "Avantasia", "Avantasia", Date());
     std::cout << s1 << endl << s2 <<endl << s3 << endl;
