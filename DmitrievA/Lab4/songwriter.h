@@ -60,22 +60,24 @@ public:
 		sort(songs.begin(), songs.end());
 	}
 	void add_song(Song song) {
-		songs.push_back(song);
-		sort(songs.begin(), songs.end());
+		songs.insert(std::lower_bound(songs.begin(), songs.end(), song), song);
 	}
 	void change_song(Song old_song, Song new_song) {
-		for (Song i : songs) {
-			if (i == old_song) {
-				i = new_song;
-			}
+
+		if (std::binary_search(songs.begin(), songs.end(), old_song)) {
+			songs.erase(std::lower_bound(songs.begin(), songs.end(), old_song));
+			songs.insert(std::lower_bound(songs.begin(), songs.end(), new_song), new_song);
 		}
-		sort(songs.begin(), songs.end());
 	}
 	Song find_song(string name, string singer) {
-		for (Song s : songs) {
-			if (s.name == name && s.singer == singer) {
-				return s;
-			}
+		size_t res = std::lower_bound(songs.begin(), songs.end(), Song(name, "", singer),
+			[](const Song& s1, const Song s2) {
+				if (s1.name != s2.name) return s1.name < s2.name;
+				return s1.singer < s2.singer;
+			})
+			- songs.begin();
+		if (songs[res].name == name && songs[res].singer == singer) {
+			return songs[res];
 		}
 		return Song();
 	}
@@ -99,10 +101,8 @@ public:
 		return songs.size();
 	}
 	void delete_song(Song song) {
-		for (size_t i = 0; i < songs.size(); ++i) {
-			if (songs[i] == song) {
-				songs.erase(songs.begin()+i);
-			}
+		if (std::binary_search(songs.begin(), songs.end(), song)) {
+			songs.erase(std::lower_bound(songs.begin(), songs.end(), song));
 		}
 	}
 	void save_to_file(string path) {
