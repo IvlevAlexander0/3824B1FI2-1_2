@@ -8,7 +8,6 @@ using namespace std;
 
 class Contact;
 class Contacts;
-struct MyError;
 bool check(const Contact& x, const Contact& y);
 
 class Contact {
