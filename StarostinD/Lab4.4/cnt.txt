@@ -1,0 +1,6 @@
+Ivanov Ivan Ivanovich 78901233212 10 02 1967 1
+Smirnov Danil Nikolaevich 789457681234 02 11 2007 0
+Ivanov Ivan Ivanovich 78901233222 11 02 1967 1
+Marius Euanthe Lehtinen 13235648 14 01 2015 1
+Karlo Kazuhiko Rapp 4656564 30 08 2000 0
+Margit Akif Higashi 4656564 11 04 1999 1
