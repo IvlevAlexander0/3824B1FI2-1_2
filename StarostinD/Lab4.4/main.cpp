@@ -96,8 +96,7 @@ public:
 		}
 	}
 	void remove() {
-		auto it = book.begin() + cur;
-		book.erase(it);
+		book.erase(book.begin() + cur);
 		--size;
 	}
 	void set_name(string fullname) {
@@ -258,5 +257,8 @@ int main() {
 		cerr << "\nError! " << er.str << '\n';
 	}
 	txt1.close();
+	book.remove();
+	cout << endl;
+	book.get_contacts();
 	return 0;
 }
