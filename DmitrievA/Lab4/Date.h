@@ -207,8 +207,6 @@ public:
 		size_t num = 0;
 		int f = 1;
 		for (char i : s) {
-			num += i - '0';
-			num *= 10;
 			if (i == '.') {
 				switch (f)
 				{
@@ -223,6 +221,10 @@ public:
 					f = 3;
 					break;
 				}
+			}
+			else {
+				num *= 10;
+				num += i - '0';
 			}
 		}
 		day = num;
