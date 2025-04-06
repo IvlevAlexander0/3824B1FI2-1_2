@@ -13,6 +13,7 @@ public:
     string composer;
     string performer;
     string album;
+
     struct Date {
         int day;
         int month;
@@ -44,34 +45,68 @@ private:
         }
         return Data;
     }
-public:
 
+    int findIndexByTitle(const string& title) const {
+        int left = 0, right = songs.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (songs[mid].title == title) {
+                return mid;
+            }
+            else if (songs[mid].title < title) {
+                left = mid + 1;
+            }
+            else {
+                right = mid - 1;
+            }
+        }
+        return -1;
+    }
+
+    void insertSong(const Song& song) {
+        int left = 0;
+        int right = songs.size() - 1;
+        int insertPos = songs.size();
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (songs[mid].title >= song.title) {
+                insertPos = mid;
+                right = mid - 1;
+            }
+            else {
+                left = mid + 1;
+            }
+        }
+
+        songs.insert(songs.begin() + insertPos, song);
+    }
+
+public:
     void addSong(const string title, const string poet, const string composer, const string performer, const string album, int day, int month, int year) {
-        songs.emplace_back(title, poet, composer, performer, album, day, month, year);
-        sort(songs.begin(), songs.end());
+        Song song(title, poet, composer, performer, album, day, month, year);
+        insertSong(song);
     }
 
     void modifySong(int index, const string title, const string poet, const string composer, const string performer, const string album, int day, int month, int year) {
         if (index >= 0 && index < songs.size()) {
-            songs[index] = Song(title, poet, composer, performer, album, day, month, year);
-            sort(songs.begin(), songs.end());
+            songs.erase(songs.begin() + index);
+            Song song(title, poet, composer, performer, album, day, month, year);
+            insertSong(song);
         }
     }
 
     Song* findSong(const string& title, const string& performer) {
-        for (size_t i = 0; i < songs.size(); ++i) {
-            Song& song = songs[i];
-            if (song.title == title && song.performer == performer) {
-                return &song;
-            }
+        int index = findIndexByTitle(title);
+        if (index != -1 && songs[index].performer == performer) {
+            return &songs[index];
         }
         return nullptr;
     }
 
     vector<Song> getSongsByPoet(const string& poet) {
         vector<Song> result;
-        for (size_t i = 0; i < songs.size(); ++i) {
-            Song& song = songs[i];
+        for (const Song& song : songs) {
             if (song.poet == poet) {
                 result.push_back(song);
             }
@@ -81,8 +116,7 @@ public:
 
     vector<Song> getSongsByComposer(const string& composer) {
         vector<Song> result;
-        for (size_t i = 0; i < songs.size(); ++i) {
-            Song& song = songs[i];
+        for (const Song& song : songs) {
             if (song.composer == composer) {
                 result.push_back(song);
             }
@@ -92,8 +126,7 @@ public:
 
     vector<Song> getSongsByPerformer(const string& performer) {
         vector<Song> result;
-        for (size_t i = 0; i < songs.size(); ++i) {
-            Song& song = songs[i];
+        for (const Song& song : songs) {
             if (song.performer == performer) {
                 result.push_back(song);
             }
@@ -112,11 +145,9 @@ public:
     }
 
     void saveToFile(const string& filename) {
-        ofstream file;
-        file.open(filename);
+        ofstream file(filename);
         if (file.is_open()) {
-            for (size_t i = 0; i < songs.size(); ++i) {
-                Song& song = songs[i];
+            for (const Song& song : songs) {
                 file << song.title << "|" << song.poet << "|" << song.composer << "|" << song.performer << "|" << song.album << "|"
                     << song.date.day << "|" << song.date.month << "|" << song.date.year << "\n";
             }
@@ -124,41 +155,35 @@ public:
         else {
             cout << "File opening error!" << endl;
         }
-        file.close();
     }
 
     void loadFromFile(const string& filename) {
-        ifstream file;
-        file.open(filename);
+        ifstream file(filename);
         string line;
-
         if (file.is_open()) {
-          while (getline(file, line)) {
-              if (line.empty()) continue;
-
-              string title, poet, composer, performer, album;
-              int day, month, year;
-              size_t pos = 0;
-              title = getNextData(line, pos);
-              poet = getNextData(line, pos);
-              composer = getNextData(line, pos);
-              performer = getNextData(line, pos);
-              album = getNextData(line, pos);
-              day = stoi(getNextData(line, pos));
-              month = stoi(getNextData(line, pos));
-              year = stoi(getNextData(line, pos));
-              songs.emplace_back(title, poet, composer, performer, album, day, month, year);
+            while (getline(file, line)) {
+                if (line.empty()) continue;
+                string title, poet, composer, performer, album;
+                int day, month, year;
+                size_t pos = 0;
+                title = getNextData(line, pos);
+                poet = getNextData(line, pos);
+                composer = getNextData(line, pos);
+                performer = getNextData(line, pos);
+                album = getNextData(line, pos);
+                day = stoi(getNextData(line, pos));
+                month = stoi(getNextData(line, pos));
+                year = stoi(getNextData(line, pos));
+                insertSong(Song(title, poet, composer, performer, album, day, month, year));
             }
         }
         else {
             cout << "File opening error!" << endl;
         }
-        sort(songs.begin(), songs.end());
-        file.close();
     }
+
     void printAllSongs() const {
         cout << "Total songs: " << songs.size() << "\n\n";
-
         for (size_t i = 0; i < songs.size(); ++i) {
             const Song& song = songs[i];
             cout << "---------------------" << '\n';
@@ -181,34 +206,29 @@ int main() {
     songbook.addSong("Song2_p1", "Poet1", "Composer1", "Performer1", "Album2", 2, 1, 2024);
     songbook.addSong("Song3_p1", "Poet1", "Composer1", "Performer1", "Album3", 3, 1, 2024);
     songbook.addSong("Song2", "Poet2", "Composer2", "Performer2", "Album2", 2, 2, 2025);
-
     songbook.modifySong(0, "Song1_Modded", "Poet1", "Composer1", "Performer1", "Album1", 1, 1, 2020);
 
     Song* song = songbook.findSong("Song1_Modded", "Performer1");
-
-    cout << "song " << (*song).title << " was found." << endl;
-
+    if (song) {
+        cout << "song " << (*song).title << " was found." << endl;
+    }
 
     vector<Song> poetSongs = songbook.getSongsByPoet("Poet1");
-    for (size_t i = 0; i < poetSongs.size(); ++i) {
-        Song& s = poetSongs[i];
+    for (const Song& s : poetSongs) {
         cout << "Poet1's song: " << s.title << endl;
     }
 
     songbook.printAllSongs();
 
     cout << endl << "-------File's data added.-------" << endl << endl;
-
     songbook.loadFromFile("songbook.txt");
-
     songbook.printAllSongs();
 
     cout << endl;
-
     vector<Song> BeethovenSongs = songbook.getSongsByComposer("Beethoven");
-    for (size_t i = 0; i < BeethovenSongs.size(); ++i) {
-        Song& s = BeethovenSongs[i];
+    for (const Song& s : BeethovenSongs) {
         cout << "Beethoven's song: " << s.title << endl;
     }
+
     return 0;
 }
