@@ -1,0 +1,3 @@
+IAmRussian|Shaman|Shaman|Shaman|None|1|4|2025
+Valkyries flight|None|Vagner|orchestra|Classic|2|2|1111
+Moonlight Sonata|None|Beethoven|orchestra|classic_2|2|1|3025
