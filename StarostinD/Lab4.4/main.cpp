@@ -43,25 +43,42 @@ private:
 	vector<Contact> book;
 	size_t cur;
 	size_t size;
-	bool find(long long phone) {
-		for (int i = 0; i < size; ++i) {
-			if(book[i].phone == phone) {
-				cur = i;
-				return true;
-			}
+	int b_search(long long phone) {
+		int l = 0, r = size;
+		while (r - l > 0) {
+			int m = (l + r) / 2;
+			if (book[m].phone <= phone) { l = m + 1; }
+			else { r = m; }
 		}
-		return false;
+		return r;
+	}
+	int b_search(const string& fullname) {
+		string tmp;
+		int l = 0, r = size;
+		while (r - l > 0) {
+			int m = (l + r) / 2;
+			tmp = book[m].name[0] + ' ' + book[m].name[1] + ' ' + book[m].name[2];
+			if (tmp <= fullname) { l = m + 1; }
+			else { r = m; }
+		}
+		return r;
+	}
+
+	bool find(long long phone) {
+		int r = b_search(phone);
+		if (size == 0 || r == size || r == 0 || book[r - 1].phone != phone) {
+			return false;
+		}
+		cur = r - 1;
+		return true;
 	}
 	bool find(const string& fullname) {
-		string tmp;
-		for (int i = 0; i < size; ++i) {
-			tmp = book[i].name[0] + ' ' + book[i].name[1] + ' ' + book[i].name[2];
-			if (tmp == fullname) {
-				cur = i;
-				return true;
-			}
+		int r = b_search(fullname);
+		if (size == 0 || r == size || r == 0 || book[r - 1].name[0] + ' ' + book[r - 1].name[1] + ' ' + book[r - 1].name[2] != fullname) {
+			return false;
 		}
-		return false;
+		cur = r - 1;
+		return true;
 	}
 public:
 	Contacts() : book(), cur(0), size(0) {};
@@ -71,8 +88,9 @@ public:
 		bool b1 = find(a.name[0] + ' ' + a.name[1] + ' ' + a.name[2]);
 		bool b2 = find(a.phone);
 		if (!b1 && !b2) {
-			book.push_back(a);
-			sort(book.begin(), book.end(), check);
+			int pos = b_search(a.name[0] + ' ' + a.name[1] + ' ' + a.name[2]);
+			auto it = book.begin() + pos;
+			book.insert(book.begin() + pos, a);
 			++size;
 			cur = 0;
 		}
@@ -226,39 +244,44 @@ public:
 };
 
 int main() {
-	Contacts book;
-	ifstream txt("cnt.txt");
-	book.read(txt);
-	book.get_contacts();
-	cout << "\nFavorite:\n";
-	book.get_favorite();
-	cout << endl;
-	book.add(Contact("Pavlov", "Maksim", "Sergeevich", 79204129870, 18, 10, 1998, 1));
-	book.add(Contact("Petrov", "Roman", "Konstantinovich", 79154239570, 10, 07, 1973, 0));
-	book.get_contacts();
-	cout << '\n';
-	book.get_contacts('P');
-	txt.close();
-	ofstream txt1("contacts.txt");
-	book.save(txt1);
-	cout << "\nSize is: " << book.get_size() << endl;
-	book.choose(13235648);
-	cout << "Found: ";
-	book.chosen();
-	book.set_name("Edward Euanthe Lehtinen");
-	cout << "Changed contact: ";
-	book.chosen();
-	cout << endl;
-	book.get_contacts();
 	try {
-		book.choose(111);
+		Contacts book;
+		ifstream txt("cnt.txt");
+		book.read(txt);
+		book.get_contacts();
+		cout << "\nFavorite:\n";
+		book.get_favorite();
+		cout << endl;
+		book.add(Contact("Pavlov", "Maksim", "Sergeevich", 79204129870, 18, 10, 1998, 1));
+		book.add(Contact("Petrov", "Roman", "Konstantinovich", 79154239570, 10, 07, 1973, 0));
+		book.get_contacts();
+		cout << '\n';
+		book.get_contacts('I');
+		txt.close();
+		ofstream txt1("contacts.txt");
+		book.save(txt1);
+		cout << "\nSize is: " << book.get_size() << endl;
+		book.choose(13235648);
+		cout << "Found: ";
+		book.chosen();
+		book.set_name("Edward Euanthe Lehtinen");
+		cout << "Changed contact: ";
+		book.chosen();
+		cout << endl;
+		book.get_contacts();
+		try {
+			book.choose(111);
+		}
+		catch (const MyError& er) {
+			cerr << "\nError! " << er.str << '\n';
+		}
+		txt1.close();
+		book.remove();
+		cout << endl;
+		book.get_contacts();
 	}
 	catch (const MyError& er) {
 		cerr << "\nError! " << er.str << '\n';
 	}
-	txt1.close();
-	book.remove();
-	cout << endl;
-	book.get_contacts();
 	return 0;
 }
