@@ -5,7 +5,6 @@
 #include <sstream>
 #include <string>
 using namespace std;
-
 class Film {
 public:
     string title;
@@ -20,9 +19,14 @@ public:
     Film(string t, string d, string s, string c, int dy, int mn, int yr, long long e)
         : title(t), director(d), screenwriter(s), composer(c), day(dy), month(mn), year(yr), earnings(e) {}
 
-    bool operator<(const Film& other) const { // Для упорядочивания фильмов
+    //Для упорядочивания фильмов
+    bool operator<(const Film& other) const {
         if (title == other.title) return year < other.year;
         return title < other.title;
+    }
+    //Для поиска в массиве
+    bool operator==(const Film& other) const {
+        return title == other.title && year == other.year;
     }
 };
 
@@ -30,34 +34,33 @@ class FilmLibrary {
 private:
     vector<Film> films;
 
-    void sortFilms() {
-        sort(films.begin(), films.end());
+    //Для упорядочивания
+    void insertFilmSorted(const Film& film) {
+        auto it = lower_bound(films.begin(), films.end(), film);
+        films.insert(it, film);
     }
+    //Далее lower bound используется для упрощения поиска в упорядоченном массиве
 
 public:
     //1 -Добавить фильм
     void addFilm(const Film& film) {
-        films.push_back(film);
-        sortFilms();
+        insertFilmSorted(film);
     }
 
     //2 - Изменить фильм
     void updateFilm(const string& title, int year, const Film& newFilm) {
-        for (auto& film : films) {
-            if (film.title == title && film.year == year) {
-                film = newFilm;
-                sortFilms();
-                return;
-            }
+        auto it = lower_bound(films.begin(), films.end(), Film(title, "", "", "", 0, 0, year, 0));
+        if (it != films.end() && *it == Film(title, "", "", "", 0, 0, year, 0)) {
+            *it = newFilm;
+            insertFilmSorted(newFilm); // Сортировка по новой, если она нужна
         }
     }
 
     //3 - Поиск фильма
     Film* findFilm(const string& title, int year) {
-        for (auto& film : films) {
-            if (film.title == title && film.year == year) {
-                return &film;
-            }
+        auto it = lower_bound(films.begin(), films.end(), Film(title, "", "", "", 0, 0, year, 0));
+        if (it != films.end() && *it == Film(title, "", "", "", 0, 0, year, 0)) {
+            return &(*it);
         }
         return nullptr;
     }
@@ -109,6 +112,7 @@ public:
         return vector<Film>(filteredFilms.begin(), filteredFilms.begin() + count);
     }
 
+
     //8 - Число фильмов в фильмотеке
     int getFilmCount() {
         return films.size();
@@ -116,9 +120,10 @@ public:
 
     //9 - Удаление фильма
     void deleteFilm(const string& title, int year) {
-        films.erase(remove_if(films.begin(), films.end(), [title, year](const Film& film) {
-            return film.title == title && film.year == year;
-            }), films.end());
+        auto it = lower_bound(films.begin(), films.end(), Film(title, "", "", "", 0, 0, year, 0));
+        if (it != films.end() && *it == Film(title, "", "", "", 0, 0, year, 0)) {
+            films.erase(it);
+        }
     }
 
     //10 - Добавить в файл
@@ -129,7 +134,6 @@ public:
                 << film.composer << "," << film.day << "," << film.month << "," << film.year << ","
                 << film.earnings << "\n";
         }
-        file.close();
     }
 
     //11 - Извлечь из файла
@@ -141,7 +145,7 @@ public:
             string title, director, screenwriter, composer;
             int day, month, year;
             long long earnings;
-            getline(ss, title);
+            getline(ss, title, ',');
             getline(ss, director, ',');
             getline(ss, screenwriter, ',');
             getline(ss, composer, ',');
@@ -157,7 +161,6 @@ public:
         file.close();
     }
 };
-
 int main() {
     FilmLibrary library;
     FilmLibrary library1; // Для загрузки из файла
@@ -169,8 +172,11 @@ int main() {
     library.saveToFile("films.txt");
     library1.loadFromFile("films.txt");
 
+    //Был выпущен в 2001
     const Film K("The Lord of the Rings: The Fellowship of the Ring", "Peter Jackson", "Peter Jackson", "Howard Shore", 19, 12, 2001, 871530324);
     library.updateFilm("The Lord of the Rings: The Fellowship of the Ring", 2003, K);
+
+
     library1.addFilm(Film("Inglourious Basterds", "Quentin Tarantino", "Quentin Tarantino", "Ennio Morricone", 19, 8, 2009, 321455689));
 
     cout << "Film count first library: " << library.getFilmCount() << endl;
@@ -206,14 +212,26 @@ int main() {
         cout << l.title << endl;
     }
 
-    vector<Film> topEarnings = library.getTopEarnings(2);
+    vector<Film> topEarnings = library1.getTopEarnings(2);
     cout << "Top earnings:" << endl;
     for (const auto& f : topEarnings) {
         cout << f.title << " - " << f.earnings << endl;
     }
 
+
+    Film* film_ = library1.findFilm("The Lord of the Rings: The Fellowship of the Ring", 2003);
+    if (film_) {
+        cout << "Found film: " << film_->title << endl;
+    }
+    else {
+        cout << "Film not found" << endl;
+    }
+
     library.deleteFilm("The Lord of the Rings: The Fellowship of the Ring", 2001);
     library1.deleteFilm("Inglourious Basterds", 2009);
+
+    //Не удаляется, поскольку в файле(и в library1 соответственно) записан с другим годом выпуска:
+    library1.deleteFilm("The Lord of the Rings: The Fellowship of the Ring", 2001);
     cout << "Film count after deletion: " << library.getFilmCount() << endl;
     cout << "Film count after deletion: " << library1.getFilmCount() << endl;
 
