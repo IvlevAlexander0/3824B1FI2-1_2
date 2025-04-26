@@ -525,7 +525,7 @@ public:
         }
     }
 
-    void fast_forward_one_month(int _months) //"Перемотка времени" на нескоько месяцев вперёд.
+    void fast_forward_several_months(int _months) //"Перемотка времени" на нескоько месяцев вперёд.
     {
         if (database.empty() != true) //empty() проверяет пустой ли вектор(пустой - true, иначе false).
         {
@@ -587,7 +587,7 @@ int main()
     test.show_status_deposit();
     std::cout << "====================" << std::endl;
 
-    test.fast_forward_one_month(3); //Перемотка времени на 3 месяц.
+    test.fast_forward_several_months(3); //Перемотка времени на 3 месяц.
     std::cout << "====================" << std::endl;
 
     test.show_status_deposit();
@@ -605,7 +605,7 @@ int main()
     test.print_info_login_client();
     std::cout << "====================" << std::endl;
 
-    test.fast_forward_one_month(10); //Перемотка времени на 10 месяц.
+    test.fast_forward_several_months(10); //Перемотка времени на 10 месяц.
     std::cout << "====================" << std::endl;
 
     test.show_status_deposit();
