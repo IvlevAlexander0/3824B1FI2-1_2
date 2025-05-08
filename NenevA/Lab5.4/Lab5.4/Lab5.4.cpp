@@ -1,10 +1,18 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstring>
+#include <stdexcept>
+
 using namespace std;
 
 const int MAX_PRODUCTS = 100;
 const int MAX_PURCHASE_ITEMS = 100;
+
+// Исключение для некорректных значений продукта
+class InvalidProductException : public std::runtime_error {
+public:
+    InvalidProductException(const std::string& message) : runtime_error(message) {}
+};
 
 class Sklad {
 private:
@@ -17,6 +25,12 @@ private:
 public:
     // Добавление товара в склад
     void addProduct(const char* barcode, const char* name, int price, int discount) {
+        if (price < 0) {
+            throw InvalidProductException("Price cannot be negative.");
+        }
+        if (discount < 0 || discount > 100) {
+            throw InvalidProductException("Discount must be in the range [0, 100].");
+        }
         if (productCount < MAX_PRODUCTS) {
             strcpy(productBarcodes[productCount], barcode);
             strcpy(productNames[productCount], name);
@@ -24,9 +38,11 @@ public:
             productDiscounts[productCount] = discount;
             productCount++;
         }
+        else {
+            throw InvalidProductException("Maximum product limit reached.");
+        }
     }
 
-    //Получить информацию о товаре
     bool getProductInfo(const char* barcode, char* name, int& price, int& discount) {
         for (int i = 0; i < productCount; i++) {
             if (strcmp(productBarcodes[i], barcode) == 0) {
@@ -39,7 +55,7 @@ public:
         return false;
     }
 
-    //Вывести информацию о товаре
+    // Вывести информацию о товаре
     void printInfo(const char* barcode) {
         for (int i = 0; i < productCount; i++) {
             if (strcmp(productBarcodes[i], barcode) == 0) {
@@ -55,7 +71,6 @@ public:
     }
 };
 
-
 class Kas {
 private:
     Sklad& sklad;
@@ -70,7 +85,7 @@ private:
 public:
     Kas(Sklad& sklad) : sklad(sklad) {}
 
-    //Сканировать товар на кассе, т.е. добавить в чек
+    // Сканировать товар на кассе, т.е. добавить в чек
     void scanProduct(const char* barcode) {
         char name[50];
         int price, discount;
@@ -100,7 +115,7 @@ public:
         }
     }
 
-    //Убрать продукт
+    // Убрать продукт
     void removeProduct(const char* barcode) {
         for (int i = 0; i < purchaseItemCount; i++) {
             if (strcmp(purchaseBarcodes[i], barcode) == 0) {
@@ -118,33 +133,36 @@ public:
         }
     }
 
-    //Распечатать чек
+    // Распечатать чек
     void printReceipt() {
         cout << "Receipt:" << endl;
-        int totalDiscount = 0;
         for (int i = 0; i < purchaseItemCount; i++) {
             cout << purchaseNames[i] << " " << purchasePrices[i] << " rub "
-                << purchaseQuantities[i] << " pcs " << purchaseTotals[i] << " rub" << endl;
-            totalDiscount += (purchasePrices[i] * purchaseQuantities[i]) - purchaseTotals[i];
+                << "Quantity: " << purchaseQuantities[i] << " Total: " << purchaseTotals[i] << endl;
         }
-        cout << "Total cost: " << totalCost << " rub" << endl;
-        cout << "Discount: " << totalDiscount << " rub" << endl;
-        cout << "To pay: " << totalCost << " rub" << endl;
+        cout << "Total Cost: " << totalCost << " rub" << endl;
     }
 };
 
 int main() {
     Sklad sklad;
-    sklad.addProduct("0001", "Milk", 50, 5);
-    sklad.addProduct("0002", "Bread", 30, 10);
-    sklad.addProduct("0003", "Butter", 100, 3);
-    sklad.printInfo("0002");
     Kas kas(sklad);
+
+    try {
+        sklad.addProduct("0001", "Milk", 50, 5);
+        sklad.addProduct("0002", "Bread", 30, 10);
+        sklad.addProduct("0003", "Butter", 100, 3);
+        sklad.addProduct("0004", "Ice Cream", 100, 10);
+        sklad.addProduct("0005", "Fish", -50, 20); // Вызывает исключение
+    }
+    catch (const InvalidProductException& e) {
+        cout << "Error adding product: " << e.what() << endl;
+    }
+
+    sklad.printInfo("0004");
     kas.scanProduct("0001");
     kas.scanProduct("0002");
-    kas.scanProduct("0002");
     kas.scanProduct("0003");
-
     kas.printReceipt();
 
     kas.removeProduct("0002");
