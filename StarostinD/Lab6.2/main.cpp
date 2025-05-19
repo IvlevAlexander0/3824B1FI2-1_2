@@ -1,6 +1,4 @@
 #include <iostream>
-#include <cmath>
-#include <vector>
 #include <string>
 #include <stdexcept>
 using namespace std;
@@ -13,26 +11,26 @@ class Game;
 class Player {
 protected:
 	int length = 0;
-	vector<int> number = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
+	int number[10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 public:
+	Player() = default;
 	virtual void new_game(int len) = 0;
 };
 
 class Human: public Player{
 private:
-	void check_number_length(int num) {
+	void check_number_length(long long num) const {
 		int check_length = 0;
-		int num_copy = num;
+		long long num_copy = num;
 		while (num_copy) {
 			num_copy /= 10;
 			++check_length;
 		}
 		if (check_length != length) {
-			throw invalid_argument("Error! The length of the number must be equal to the entered length.\n");
+			throw invalid_argument("Error! The length of the number must be equal to the entered length.(" + to_string(length) + ")\n");
 		}
 	}
 	friend  Computer;
-	friend Game;
 public:
 	Human(int len) {
 		new_game(len);
@@ -43,7 +41,7 @@ public:
 		}
 		length = len;
 	}
-	void new_number(int num) {
+	void new_number(long long num) {
 		check_number_length(num);
 		for (int i = 0; i < 10; ++i) {
 			number[i] = -1;
@@ -62,9 +60,6 @@ public:
 };
 
 class Computer: public Player {
-private:
-	bool result = false;
-	friend Game;
 public:
 	Computer(int len) {
 		new_game(len);
@@ -77,7 +72,6 @@ public:
 		for (int i = 0; i < 10; ++i) {
 			number[i] = -1;
 		}
-		result = false;
 		int id = 1 + rand() % 9;
 		number[id] = 0;
 		for (int i = 1; i < len; ++i) {
@@ -118,7 +112,7 @@ public:
 		player.new_game(len);
 		computer.new_game(len);
 	}
-	void guess(int num) {
+	void guess(long long num) {
 		++attempts_;
 		player.new_number(num);
 		computer.compare(bulls_, cows_, player);
@@ -126,34 +120,36 @@ public:
 			result = true;
 		}
 	}
-	int cows() {
+	int cows() const {
 		return cows_;
 	}
-	int bulls() {
+	int bulls() const {
 		return bulls_;
 	}
-	bool win() {
+	bool win() const {
 		return result;
 	}
-	int attempts() {
+	int attempts() const {
 		return attempts_;
 	}
 };
 
 
 int main() {
+	srand(time(NULL));
 	cout << "This is a game of bulls and cows.";
 	bool exit = false;
+	Game g(1);
 	try {
 		do {
-			cout << "\nEnter the length of the number : ";
+			cout << "\nEnter the length of the number: ";
 			int length;
 			cin >> length;
-			Game g(length);
+			g.new_game(length);
 			cout << "\nLet's start.\n";
 			while (!g.win()) {
 				cout << "Guess the number: ";
-				int number;
+				long long number;
 				cin >> number;
 				try {
 					g.guess(number);
@@ -167,7 +163,7 @@ int main() {
 				}
 			}
 			cout << "\nYou win!!! Number of attempts: " << g.attempts();
-			cout << "\nWant to play again ? (Enter 1 for YES and 0 for NO) : ";
+			cout << "\nWant to play again? (Enter 0 for NO and any other number for YES): ";
 			cin >> exit;
 		} while (exit);
 	}
@@ -175,4 +171,5 @@ int main() {
 		cerr << e.what();
 	}
 	cout << "\nGoodbye!\n";
+	return 0;
 }
