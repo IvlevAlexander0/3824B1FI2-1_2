@@ -22,7 +22,11 @@ public:
         for (int i = 0; i <= n; ++i) {
             coefficients[i] = 0.0;
         }
+        if (n > 0) {
+            coefficients[n] = 1.0;
+        }
     }
+
     ~Polynom() {}
 
     Polynom& operator=(const Polynom& other) {
@@ -42,6 +46,9 @@ public:
         degree = n;
         for (int i = 0; i <= n; ++i) {
             coefficients[i] = 0.0;
+        }
+        if (n > 0) {
+            coefficients[n] = 1.0;
         }
     }
 
@@ -67,7 +74,6 @@ public:
     }
 
     double v_x(double x) const {
-        double result = 0.0;
         double result = coefficients[degree];
         for (int i = degree - 1; i >= 0; --i) {
             result = result * x + coefficients[i];
@@ -87,9 +93,9 @@ public:
     }
 
     friend std::ostream& operator<<(ostream& os, const Polynom& poly) {
-        for (int i = 0; i <= poly.degree; ++i) {
+        for (int i = poly.degree; i >= 0; --i) {
             os << poly.coefficients[i] << "x^" << i;
-            if (i < poly.degree) {
+            if (i > 0) {
                 os << " + ";
             }
         }
@@ -99,6 +105,7 @@ public:
 
 int main() {
     int degree;
+    cout << "polinom degree: ";
     cin >> degree;
     Polynom p(degree);
 
