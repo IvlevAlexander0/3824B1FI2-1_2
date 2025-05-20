@@ -50,6 +50,9 @@ public:
             throw out_of_range("index out of range");
         }
         coefficients[index] = value;
+        if (index == degree && value == 0.0 && degree > 0) {
+            degree--;
+        }
     }
 
     int getDegree() const {
@@ -65,10 +68,11 @@ public:
 
     double v_x(double x) const {
         double result = 0.0;
-        for (int i = 0; i <= degree; ++i) {
-            result += coefficients[i] * pow(x, i);
+        double result = coefficients[degree];
+        for (int i = degree - 1; i >= 0; --i) {
+            result = result * x + coefficients[i];
+            return result; // sxema gornera
         }
-        return result;
     }
 
     Polynom proizvodnaya() const {
